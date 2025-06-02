@@ -77,7 +77,8 @@ def reverse_geocode_osm(lat, lon):
         return {
             "il": data.get("state", "").upper(),
             "ilce": data.get("county", "").upper(),
-            "mahalle": data.get("neighbourhood", "") or data.get("suburb", "") or data.get("village", "")
+            "koy": data.get("village", "").upper(),
+            "mahalle": data.get("neighbourhood", "") or data.get("suburb", "") or data.get("quarter", "")
         }
     return {}
 
@@ -86,13 +87,15 @@ if lat and lon:
         location = reverse_geocode_osm(lat, lon)
         il = location.get("il", "")
         ilce = location.get("ilce", "")
+        koy = location.get("koy", "")
         mahalle = location.get("mahalle", "").upper()
 
-        st.write(f"📍 Bulunan Yer: {mahalle.title()}, {ilce.title()}, {il.title()}")
+        st.write(f"📍 Bulunan Yer: {mahalle.title()}, {koy.title()}, {ilce.title()}, {il.title()}")
 
         result_koord = df[
             (df["ILADI"] == il) &
             (df["ILCEADI"] == ilce) &
+            (df["KOYADI"].str.upper().str.contains(koy)) &
             (df["MAHADI"].str.upper().str.contains(mahalle))
         ]
 
